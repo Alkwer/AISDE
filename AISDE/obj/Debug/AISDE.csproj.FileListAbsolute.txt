@@ -1,0 +1,7 @@
+C:\Users\Dom\Source\Repos\AISDE\AISDE\bin\Debug\AISDE.exe.config
+C:\Users\Dom\Source\Repos\AISDE\AISDE\bin\Debug\AISDE.exe
+C:\Users\Dom\Source\Repos\AISDE\AISDE\bin\Debug\AISDE.pdb
+C:\Users\Dom\Source\Repos\AISDE\AISDE\obj\Debug\AISDE.csprojAssemblyReference.cache
+C:\Users\Dom\Source\Repos\AISDE\AISDE\obj\Debug\AISDE.csproj.CoreCompileInputs.cache
+C:\Users\Dom\Source\Repos\AISDE\AISDE\obj\Debug\AISDE.exe
+C:\Users\Dom\Source\Repos\AISDE\AISDE\obj\Debug\AISDE.pdb

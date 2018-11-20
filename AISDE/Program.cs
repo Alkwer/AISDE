@@ -137,36 +137,43 @@ namespace Lab1
             List<Node> visited = new List<Node>();
             medges.Sort((x, y) => x.weight.CompareTo(y.weight)); //sortowanie listy według wag rosnąco
             visited.Add(mnodes[medges[0].from-1]); // dodajemy do odwiedzanych wiercholek poczatkowy krawedzi o najmniejszej wadze (indeks w liście zaczyna się od 0 a id od 1, dlatego -1) 
-
-            for (int i = 1; i < mnumber_of_edges; i++) //dla wszystkich krawedzi
+            int j = 0;
+            int i = 0;
+            while (i < mnumber_of_edges) //dla wszystkich krawedzi
             {
-                testfrom = medges[i - 1].from; 
-                testto = medges[i - 1].to;
+               
+                testfrom = medges[i].from; 
+                testto = medges[i].to;
                 nodea = visited.Exists(node => node.id == testfrom);
                 nodeb = visited.Exists(node => node.id == testto);
                 //powyzsze linijki sprawdzaja czy wierzcholki danej krawedzi byly juz odwiedzone
                 if (nodea == false && nodeb == true) // jesli koniec krawedzi byl odwiedzony to dodaj poczatek krawedzi do odwiedzonych i sama krawedz do drzewa
                 {
-                    visited.Add(mnodes[medges[i - 1].from]);
-                    mst.Add(medges[i - 1]);
+                    visited.Add(mnodes[medges[i].from-1]);
+                    mst.Add(medges[i]);
+                    j = 0;
+                    //Console.WriteLine("testa");
+                    
                 }
                 else if (nodea == true && nodeb == false) // jesli poczatek krawedzi byl juz odwiedzony to dodaj koniec krawedzi do odwiedzonych i sama krawedz do drzewa
                 {
-                    visited.Add(mnodes[medges[i - 1].to]);
-                    mst.Add(medges[i - 1]);
+                    visited.Add(mnodes[medges[i].to-1]);
+                    mst.Add(medges[i]);
+                    j = 0;
+                   //Console.WriteLine("testb");
                 }
                 else if (nodea == false && nodeb == false) // jesli zaden z wierzcholkow krawedzi nie byl odwiedzony to zamieniamy ta krawedz miejscami z nastepna
                 {                                          // robimy to tak dlugo, az w koncu natrafimy na sasiada
-                    int j = 0;
-                    Edge temp = medges[i - 1];
-                    medges[i - 1] = medges[i+j];
-                    medges[i+j] = temp;
+                    Edge temp = medges[i];
+                    medges[i] = medges[i+j+1];
+                    medges[i+j+1] = temp;
                     i--;
                     j++;
+                    
+                    //Console.WriteLine("testc");
                 }
-               
+                i++;
             }
-
             return mst; 
         }
            
@@ -177,14 +184,28 @@ namespace Lab1
         {
            List<Node> nodes = new List<Node>();
            List<Edge> edges = new List<Edge>();
+           List<Edge> mintree = new List<Edge>();
+           Path path = new Path();
            Network network = new Network(nodes, edges);
            int number_of_nodes = 0;
            int number_of_edges = 0;
 
            network.readfile(ref nodes, ref edges, ref number_of_nodes, ref number_of_edges);
            network.calculateweight(ref nodes, ref edges, ref number_of_nodes, ref number_of_edges);
-        
-           Console.WriteLine(edges[0].weight);
+            foreach (Edge edge in edges)
+            {
+                int i = edges.IndexOf(edge);
+                Console.WriteLine(edges[i].id + " " + edges[i].from + " " + edges[i].to + " " + edges[i].weight);
+            }
+            mintree = network.prim(ref nodes, ref edges, ref number_of_edges);
+            Console.WriteLine("mst:");
+            foreach (Edge edge in mintree)
+            {
+                int i = mintree.IndexOf(edge);
+              
+                Console.WriteLine(mintree[i].id + " " + mintree[i].from + " " + mintree[i].to + " " + mintree[i].weight);
+                
+            }
            Console.ReadKey();
 
         }

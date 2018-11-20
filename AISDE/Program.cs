@@ -157,10 +157,12 @@ namespace Lab1
                 }
                 else if (nodea == false && nodeb == false) // jesli zaden z wierzcholkow krawedzi nie byl odwiedzony to zamieniamy ta krawedz miejscami z nastepna
                 {                                          // robimy to tak dlugo, az w koncu natrafimy na sasiada
+                    int j = 0;
                     Edge temp = medges[i - 1];
-                    medges[i - 1] = medges[i];
-                    medges[i] = temp;
+                    medges[i - 1] = medges[i+j];
+                    medges[i+j] = temp;
                     i--;
+                    j++;
                 }
                
             }

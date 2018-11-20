@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -126,14 +126,44 @@ namespace Lab1
             }
 
         }
+        
 
-        public List<Edge> prim(ref List<Node> mnodes, ref List<Edge> medges)
+        public List<Edge> prim(ref List<Node> mnodes, ref List<Edge> medges, ref int mnumber_of_edges)
         {
+            bool nodea = false;
+            bool nodeb = false;
+            int testfrom, testto;
             List<Edge> mst = new List<Edge>();
             List<Node> visited = new List<Node>();
-            medges.Sort((a, b) => a.weight.CompareTo(b.weight)); //sortowanie listy według wag rosnąco
-            visited.Add(mnodes[medges[0].from-1]); // dodajemy do odwiedzanych node poczatkowy edga o najmniejszej wadze (indeks w liście zaczyna się od 0 a id od 1, dlatego -1)
+            medges.Sort((x, y) => x.weight.CompareTo(y.weight)); //sortowanie listy według wag rosnąco
+            visited.Add(mnodes[medges[0].from-1]); // dodajemy do odwiedzanych wiercholek poczatkowy krawedzi o najmniejszej wadze (indeks w liście zaczyna się od 0 a id od 1, dlatego -1) 
 
+            for (int i = 1; i < mnumber_of_edges; i++) //dla wszystkich krawedzi
+            {
+                testfrom = medges[i - 1].from; 
+                testto = medges[i - 1].to;
+                nodea = visited.Exists(node => node.id == testfrom);
+                nodeb = visited.Exists(node => node.id == testto);
+                //powyzsze linijki sprawdzaja czy wierzcholki danej krawedzi byly juz odwiedzone
+                if (nodea == false && nodeb == true) // jesli koniec krawedzi byl odwiedzony to dodaj poczatek krawedzi do odwiedzonych i sama krawedz do drzewa
+                {
+                    visited.Add(mnodes[medges[i - 1].from]);
+                    mst.Add(medges[i - 1]);
+                }
+                else if (nodea == true && nodeb == false) // jesli poczatek krawedzi byl juz odwiedzony to dodaj koniec krawedzi do odwiedzonych i sama krawedz do drzewa
+                {
+                    visited.Add(mnodes[medges[i - 1].to]);
+                    mst.Add(medges[i - 1]);
+                }
+                else if (nodea == false && nodeb == false) // jesli zaden z wierzcholkow krawedzi nie byl odwiedzony to zamieniamy ta krawedz miejscami z nastepna
+                {                                          // robimy to tak dlugo, az w koncu natrafimy na sasiada
+                    Edge temp = medges[i - 1];
+                    medges[i - 1] = medges[i];
+                    medges[i] = temp;
+                    i--;
+                }
+               
+            }
 
             return mst; 
         }

@@ -176,6 +176,69 @@ namespace Lab1
             }
             return mst; 
         }
+
+        public List<Edge> dijkstra(ref List<Node> mnodes, ref List<Edge> medges, ref int start, ref int end)
+        {
+            List<Edge> mp = new List<Edge>();
+            Dictionary<Node, int> totalcosts = new Dictionary<Node, int>();
+            Dictionary<Node, Node> previousnode = new Dictionary<Node, Node>();
+            Queue<Node> priorityq = new Queue<Node>();
+            List<Node> visited = new List<Node>();
+            List<Node> neighbours = new List<Node>();
+            Node beginfrom;
+            Node newsmallest;
+            
+            mnodes.Sort((x, y) => x.id.CompareTo(y.id)); //zabezpieczenie przed zmiana kolejnosci wierzcholkow(tak zeby mozna bylo zastosowac to co jest linijke nizej) (bez tego i tak powinno dzialac)
+            beginfrom = mnodes[start - 1];
+            totalcosts.Add(beginfrom, 0); //koszt dojscia do wierzcholka poczatkowego to 0
+            priorityq.Enqueue(beginfrom); //wrzucamy wierzcholek poczatkowy do kolejki rozpatrywanych wierzcholkow
+
+            foreach (Node node in mnodes)
+            {
+                if (node != beginfrom) 
+                {
+                    totalcosts.Add(node, 10000); // koszt dojscia do pozostalych wierzcholkow to nieskonczonosc (10000 raczej wystarczy, no chyba ze zrobimy gigantyczne grafy)
+                }
+            }
+
+            while(priorityq.Count != 0) //robimy dopoki mamy cos w kolejce
+            {
+                newsmallest = priorityq.Dequeue(); // nasz wierzcholek o  obecnie najmniejszym koszcie dojscia usuwany z kolejki
+                visited.Add(newsmallest);
+
+                for (int i= 0; i<medges.Count-1; i++) // ta petla tworzy liste sasiadow wierzcholka o obecnie najmniejszym koszcie dojscia
+                {
+                    if (medges[i].from == newsmallest.id)
+                    {
+                        int idneeded;
+                        idneeded = medges[i].from;
+                        neighbours.Add(mnodes[idneeded - 1]);
+                    }
+                    else if (medges[i].to == newsmallest.id)
+                    {
+                        int idneeded;
+                        idneeded = medges[i].to;
+                        neighbours.Add(mnodes[idneeded - 1]);
+
+                    }
+                    neighbours.Sort((x, y) => x.id.CompareTo(y.id)); //to w sumie powinno posortować wierzcholki według odleglosci od newsmallest, wtedy dalej bedzie latwiej
+                }
+
+                for (int i=0; i<neighbours.Count-1; i++ ) //sprawdzamy sasiadow
+                {
+                    if (!visited.Contains(neighbours[i])) //ale tylko jesli juz ich nie badalismy wczesniej
+                    {
+                        //int newweight = totalcosts.
+
+                    }
+                    
+                }
+            }
+            
+               
+
+            return mp;
+        }
            
     }
     class Program
@@ -192,6 +255,8 @@ namespace Lab1
 
            network.readfile(ref nodes, ref edges, ref number_of_nodes, ref number_of_edges);
            network.calculateweight(ref nodes, ref edges, ref number_of_nodes, ref number_of_edges);
+
+
             foreach (Edge edge in edges)
             {
                 int i = edges.IndexOf(edge);

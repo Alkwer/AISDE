@@ -177,7 +177,7 @@ namespace Lab1
             return mst; 
         }
 
-        public List<Edge> dijkstra(ref List<Node> mnodes, ref List<Edge> medges, ref int start, ref int end)
+        public int dijkstra(ref List<Node> mnodes, ref List<Edge> medges, int start, int end)
         {
             List<Edge> mp = new List<Edge>();
             Dictionary<Node, int> totalcosts = new Dictionary<Node, int>();
@@ -186,69 +186,86 @@ namespace Lab1
             List<Node> visited = new List<Node>();
             List<Node> neighbours = new List<Node>();
             Node beginfrom;
+            Node endto;
             Node newsmallest;
             
             mnodes.Sort((x, y) => x.id.CompareTo(y.id)); //zabezpieczenie przed zmiana kolejnosci wierzcholkow(tak zeby mozna bylo zastosowac to co jest linijke nizej) (bez tego i tak powinno dzialac)
             beginfrom = mnodes[start - 1];
+            endto = mnodes[end - 1];
             totalcosts.Add(beginfrom, 0); //koszt dojscia do wierzcholka poczatkowego to 0
             priorityq.Enqueue(beginfrom); //wrzucamy wierzcholek poczatkowy do kolejki rozpatrywanych wierzcholkow
+            previousnode.Add(beginfrom, beginfrom);
 
             foreach (Node node in mnodes)
             {
                 if (node != beginfrom) 
                 {
-                    totalcosts.Add(node, 10000); // koszt dojscia do pozostalych wierzcholkow to nieskonczonosc (10000 raczej wystarczy, no chyba ze zrobimy gigantyczne grafy)
+                    totalcosts.Add(node, 10000);// koszt dojscia do pozostalych wierzcholkow to nieskonczonosc (10000 raczej wystarczy, no chyba ze zrobimy gigantyczne grafy)
+                    previousnode.Add(node, node);
                 }
             }
 
             while(priorityq.Count != 0) //robimy dopoki mamy cos w kolejce
             {
-                newsmallest = priorityq.Dequeue(); // nasz wierzcholek o  obecnie najmniejszym koszcie dojscia usuwany z kolejki
-                visited.Add(newsmallest);
+                foreach (KeyValuePair<Node, int> kvp in totalcosts) //te wypisywania sa po to zeby wiedziec co sie dzieje z kazdzym wywolaniem petli, zrobilem je do testow
+                {
+                   
+                    Console.WriteLine("Key = {0}, Value = {1}", kvp.Key.id, kvp.Value);
+                    
+                }
+                Console.WriteLine("prvnode");
+                foreach (KeyValuePair<Node, Node> kvp in previousnode)
+                {
+                    
+                    Console.WriteLine("Key = {0}, Value = {1}", kvp.Key.id, kvp.Value.id);
 
-                for (int i= 0; i<medges.Count-1; i++) // ta petla tworzy liste sasiadow wierzcholka o obecnie najmniejszym koszcie dojscia
+                }
+                Console.WriteLine("test");
+
+                newsmallest = priorityq.Dequeue(); // nasz wierzcholek o  obecnie najmniejszym koszcie dojscia usuwany z kolejki i dodajemy do odwiedzonych
+                visited.Add(newsmallest); 
+                medges.Sort((x, y) => x.weight.CompareTo(y.weight)); //sortujemy krawedzie wedlug wag, zeby lista sasiadow tez byla uporzadkowana
+                for (int i= 0; i<medges.Count; i++) // ta petla tworzy liste sasiadow wierzcholka rozpatrywanego posortowana wedlug odleglosci od tego wierzcholka
                 {
                     if (medges[i].from == newsmallest.id)
                     {
                         int idneeded;
-                        idneeded = medges[i].from;
+                        idneeded = medges[i].to;
                         neighbours.Add(mnodes[idneeded - 1]);
                     }
                     else if (medges[i].to == newsmallest.id)
                     {
                         int idneeded;
-                        idneeded = medges[i].to;
+                        idneeded = medges[i].from;
                         neighbours.Add(mnodes[idneeded - 1]);
 
                     }
-                    neighbours.Sort((x, y) => x.id.CompareTo(y.id)); //to w sumie powinno posortować wierzcholki według odleglosci od newsmallest, wtedy dalej bedzie latwiej
                 }
 
-                for (int i=0; i<neighbours.Count-1; i++ ) //sprawdzamy sasiadow
+                for (int i=0; i<neighbours.Count; i++ ) //sprawdzamy sasiadow
                 {
                     if (!visited.Contains(neighbours[i])) //ale tylko jesli juz ich nie badalismy wczesniej
                     {
-                        if(priorityq.Contains(neighbours[i])) //jeśli sąsiada nie ma na prority queue
-                            {
-                                //zaktualizowanie tabelki nową wartością jeśli jest mniejsza
-                                //zaktualizowanie poprzednika w wyżej wymienionym przypadku
-                            }
-                        else
-                            {
-                                priorityq.Enqueue(neighbours[i]); //dodanie sąsiada do priority queue
-                                //totalcosts.Add(neighbours[i].id,)
-                                //previousnode.Add(neighbours[i].id,)
-                            }
-                        //int newweight = totalcosts.
+                        double pitagoras = Math.Sqrt((neighbours[i].x - newsmallest.x) * (neighbours[i].x - newsmallest.x) + ((neighbours[i].y - newsmallest.y) * (neighbours[i].y - newsmallest.y)));
+                        int newweight = totalcosts[newsmallest] + Convert.ToInt32(pitagoras); //nowa waga to waga dojscia do wierzcholka, ktora juz mamy wpisana wczesniej w tabelke kosztow + odleglosc do sasiada
+
+                        if (!priorityq.Contains(neighbours[i])) //dodajemy sasiada do kolejki rozpatrywania(ale tylko jesli jeszcze go nie ma w tej kolejce)
+                        {
+                            priorityq.Enqueue(neighbours[i]);
+                        }
+
+                        if (newweight < totalcosts[neighbours[i]]) //jesli nowa waga jest mniejsza niz dotychczasowa to aktualizujemy tabelke kosztow i to skad przyszlismy
+                        {
+                            totalcosts[neighbours[i]] = newweight;
+                            previousnode[neighbours[i]] = newsmallest;
+                        }
 
                     }
                     
                 }
             }
-            
-               
 
-            return mp;
+            return totalcosts[endto];
         }
            
     }
@@ -263,6 +280,7 @@ namespace Lab1
            Network network = new Network(nodes, edges);
            int number_of_nodes = 0;
            int number_of_edges = 0;
+           int shortestpath;
 
            network.readfile(ref nodes, ref edges, ref number_of_nodes, ref number_of_edges);
            network.calculateweight(ref nodes, ref edges, ref number_of_nodes, ref number_of_edges);
@@ -273,6 +291,7 @@ namespace Lab1
                 int i = edges.IndexOf(edge);
                 Console.WriteLine(edges[i].id + " " + edges[i].from + " " + edges[i].to + " " + edges[i].weight);
             }
+
             mintree = network.prim(ref nodes, ref edges, ref number_of_edges);
             Console.WriteLine("mst:");
             foreach (Edge edge in mintree)
@@ -282,7 +301,10 @@ namespace Lab1
                 Console.WriteLine(mintree[i].id + " " + mintree[i].from + " " + mintree[i].to + " " + mintree[i].weight);
                 
             }
-           Console.ReadKey();
+            shortestpath = network.dijkstra(ref nodes, ref edges, 2, 3);
+            Console.WriteLine("shortestpath:" + shortestpath);
+
+            Console.ReadKey();
 
         }
     }

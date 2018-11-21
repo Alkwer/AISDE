@@ -1,9 +1,10 @@
 using System;
+using System.Drawing;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Syste.Drawing;
 
 namespace Lab1
 {
@@ -36,11 +37,6 @@ namespace Lab1
             weight = mweight;
         }
 
-    }
-
-    class Path
-    {
-       List<Edge> path = new List<Edge>();
     }
 
     class Network
@@ -268,8 +264,29 @@ namespace Lab1
 
             return totalcosts[endto];
         }
+
+        public void drawedges(ref List<Node> mnodes, ref List<Edge> medges)
+        {
+
+            Bitmap myBitmap = new Bitmap(1200, 1200);
+            Graphics g = Graphics.FromImage(myBitmap);
+            Pen pen = new Pen(Brushes.AliceBlue, 2);
+            Pen pen2 = new Pen(Brushes.DeepSkyBlue, 20);
+            Pen pen3 = new Pen(Brushes.Red, 2);
+            for (int i = 0; i < mnodes.Count(); i++)
+            {
+                g.DrawEllipse(pen2, (mnodes[i].x) * 10, (mnodes[i].y) * 10, 20, 20);
+                g.DrawEllipse(pen3, (mnodes[i].x) * 10 - 10, (mnodes[i].y) * 10 - 10, 40, 40);
+            }
+            for (int i = 0; i < medges.Count(); i++)
+            {
+                g.DrawLine(pen, (mnodes[medges[i].from - 1].x) * 10 + 10, (mnodes[medges[i].from - 1].y) * 10 + 10, (mnodes[medges[i].to - 1].x) * 10 + 10, (mnodes[medges[i].to - 1].y) * 10 + 10);
+            }
+            myBitmap.Save(@"D:\graf.bmp");
+        }
            
     }
+
     class Program
     {
         static void Main(string[] args)
@@ -277,7 +294,6 @@ namespace Lab1
            List<Node> nodes = new List<Node>();
            List<Edge> edges = new List<Edge>();
            List<Edge> mintree = new List<Edge>();
-           Path path = new Path();
            Network network = new Network(nodes, edges);
            int number_of_nodes = 0;
            int number_of_edges = 0;
@@ -285,7 +301,7 @@ namespace Lab1
 
            network.readfile(ref nodes, ref edges, ref number_of_nodes, ref number_of_edges);
            network.calculateweight(ref nodes, ref edges, ref number_of_nodes, ref number_of_edges);
-
+           network.drawedges(ref nodes, ref edges);
 
             foreach (Edge edge in edges)
             {

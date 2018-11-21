@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing;
 
 namespace Lab1
 {
@@ -57,7 +56,7 @@ namespace Lab1
             string[] data = System.IO.File.ReadAllLines(@"D:\test.txt");
             string temp;
             string[] splitedtemp = null;
-           
+
 
             temp = data[0];
             mnumber_of_nodes = Convert.ToInt32(temp);
@@ -67,13 +66,13 @@ namespace Lab1
                 temp = data[i];
                 splitedtemp = temp.Split(' ');
                 mnodes.Add(new Node(Convert.ToInt32(splitedtemp[0]), Convert.ToInt32(splitedtemp[1]), Convert.ToInt32(splitedtemp[2])));
-                
+
             }
 
             temp = data[mnumber_of_nodes + 1];
             mnumber_of_edges = Convert.ToInt32(temp);
 
-            for (int i = 1; i < mnumber_of_edges +1; i++)
+            for (int i = 1; i < mnumber_of_edges + 1; i++)
             {
                 temp = data[mnumber_of_nodes + i + 1];
                 splitedtemp = temp.Split(' ');
@@ -92,12 +91,12 @@ namespace Lab1
             int node2y = 0;
             double pitagoras = 0;
 
-            for (int i=0; i<mnumber_of_edges; i++)
+            for (int i = 0; i < mnumber_of_edges; i++)
             {
                 node1id = medges[i].from;
                 node2id = medges[i].to;
 
-                for (int j=0; j<mnumber_of_nodes; j++)
+                for (int j = 0; j < mnumber_of_nodes; j++)
                 {
                     if (node1id == mnodes[j].id)
                     {
@@ -119,12 +118,12 @@ namespace Lab1
                 double dnode2x = Convert.ToDouble(node2x);
                 double dnode2y = Convert.ToDouble(node2y);
 
-                pitagoras = Math.Sqrt((dnode2x-dnode1x)*(dnode2x-dnode1x)+((dnode2y-dnode1y)*(dnode2y-dnode1y)));
+                pitagoras = Math.Sqrt((dnode2x - dnode1x) * (dnode2x - dnode1x) + ((dnode2y - dnode1y) * (dnode2y - dnode1y)));
                 medges[i].weight = Convert.ToInt32(pitagoras);
             }
 
         }
-        
+
 
         public List<Edge> prim(ref List<Node> mnodes, ref List<Edge> medges, ref int mnumber_of_edges)
         {
@@ -134,48 +133,48 @@ namespace Lab1
             List<Edge> mst = new List<Edge>();
             List<Node> visited = new List<Node>();
             medges.Sort((x, y) => x.weight.CompareTo(y.weight)); //sortowanie listy według wag rosnąco
-            visited.Add(mnodes[medges[0].from-1]); // dodajemy do odwiedzanych wiercholek poczatkowy krawedzi o najmniejszej wadze (indeks w liście zaczyna się od 0 a id od 1, dlatego -1) 
+            visited.Add(mnodes[medges[0].from - 1]); // dodajemy do odwiedzanych wiercholek poczatkowy krawedzi o najmniejszej wadze (indeks w liście zaczyna się od 0 a id od 1, dlatego -1) 
             int j = 0;
             int i = 0;
             while (i < mnumber_of_edges) //dla wszystkich krawedzi
             {
-               
-                testfrom = medges[i].from; 
+
+                testfrom = medges[i].from;
                 testto = medges[i].to;
                 nodea = visited.Exists(node => node.id == testfrom);
                 nodeb = visited.Exists(node => node.id == testto);
                 //powyzsze linijki sprawdzaja czy wierzcholki danej krawedzi byly juz odwiedzone
                 if (nodea == false && nodeb == true) // jesli koniec krawedzi byl odwiedzony to dodaj poczatek krawedzi do odwiedzonych i sama krawedz do drzewa
                 {
-                    visited.Add(mnodes[medges[i].from-1]);
+                    visited.Add(mnodes[medges[i].from - 1]);
                     mst.Add(medges[i]);
                     j = 0;
                     //Console.WriteLine("testa");
-                    
+
                 }
                 else if (nodea == true && nodeb == false) // jesli poczatek krawedzi byl juz odwiedzony to dodaj koniec krawedzi do odwiedzonych i sama krawedz do drzewa
                 {
-                    visited.Add(mnodes[medges[i].to-1]);
+                    visited.Add(mnodes[medges[i].to - 1]);
                     mst.Add(medges[i]);
                     j = 0;
-                   //Console.WriteLine("testb");
+                    //Console.WriteLine("testb");
                 }
                 else if (nodea == false && nodeb == false) // jesli zaden z wierzcholkow krawedzi nie byl odwiedzony to zamieniamy ta krawedz miejscami z nastepna
                 {                                          // robimy to tak dlugo, az w koncu natrafimy na sasiada
                     Edge temp = medges[i];
-                    medges[i] = medges[i+j+1];
-                    medges[i+j+1] = temp;
+                    medges[i] = medges[i + j + 1];
+                    medges[i + j + 1] = temp;
                     i--;
                     j++;
-                    
+
                     //Console.WriteLine("testc");
                 }
                 i++;
             }
-            return mst; 
+            return mst;
         }
 
-        public int dijkstra(ref List<Node> mnodes, ref List<Edge> medges, int start, int end)
+        public List<Edge> dijkstra(ref List<Node> mnodes, ref List<Edge> medges, int start, int end)
         {
             List<Edge> mp = new List<Edge>();
             Dictionary<Node, int> totalcosts = new Dictionary<Node, int>();
@@ -186,7 +185,7 @@ namespace Lab1
             Node beginfrom;
             Node endto;
             Node newsmallest;
-            
+
             mnodes.Sort((x, y) => x.id.CompareTo(y.id)); //zabezpieczenie przed zmiana kolejnosci wierzcholkow(tak zeby mozna bylo zastosowac to co jest linijke nizej) (bez tego i tak powinno dzialac)
             beginfrom = mnodes[start - 1];
             endto = mnodes[end - 1];
@@ -196,34 +195,34 @@ namespace Lab1
 
             foreach (Node node in mnodes)
             {
-                if (node != beginfrom) 
+                if (node != beginfrom)
                 {
                     totalcosts.Add(node, 10000);// koszt dojscia do pozostalych wierzcholkow to nieskonczonosc (10000 raczej wystarczy, no chyba ze zrobimy gigantyczne grafy)
                     previousnode.Add(node, node);
                 }
             }
 
-            while(priorityq.Count != 0) //robimy dopoki mamy cos w kolejce
+            while (priorityq.Count != 0) //robimy dopoki mamy cos w kolejce
             {
                 foreach (KeyValuePair<Node, int> kvp in totalcosts) //te wypisywania sa po to zeby wiedziec co sie dzieje z kazdzym wywolaniem petli, zrobilem je do testow
                 {
-                   
+
                     Console.WriteLine("Key = {0}, Value = {1}", kvp.Key.id, kvp.Value);
-                    
+
                 }
                 Console.WriteLine("prvnode");
                 foreach (KeyValuePair<Node, Node> kvp in previousnode)
                 {
-                    
+
                     Console.WriteLine("Key = {0}, Value = {1}", kvp.Key.id, kvp.Value.id);
 
                 }
                 Console.WriteLine("test");
 
                 newsmallest = priorityq.Dequeue(); // nasz wierzcholek o  obecnie najmniejszym koszcie dojscia usuwany z kolejki i dodajemy do odwiedzonych
-                visited.Add(newsmallest); 
+                visited.Add(newsmallest);
                 medges.Sort((x, y) => x.weight.CompareTo(y.weight)); //sortujemy krawedzie wedlug wag, zeby lista sasiadow tez byla uporzadkowana
-                for (int i= 0; i<medges.Count; i++) // ta petla tworzy liste sasiadow wierzcholka rozpatrywanego posortowana wedlug odleglosci od tego wierzcholka
+                for (int i = 0; i < medges.Count; i++) // ta petla tworzy liste sasiadow wierzcholka rozpatrywanego posortowana wedlug odleglosci od tego wierzcholka
                 {
                     if (medges[i].from == newsmallest.id)
                     {
@@ -240,7 +239,7 @@ namespace Lab1
                     }
                 }
 
-                for (int i=0; i<neighbours.Count; i++ ) //sprawdzamy sasiadow
+                for (int i = 0; i < neighbours.Count; i++) //sprawdzamy sasiadow
                 {
                     if (!visited.Contains(neighbours[i])) //ale tylko jesli juz ich nie badalismy wczesniej
                     {
@@ -259,73 +258,112 @@ namespace Lab1
                         }
 
                     }
-                    
+
+                }
+            }
+            List<Node> used = new List<Node>();
+            Node h, j;
+            Edge toadd;
+            h = endto;
+            used.Add(h);
+            while(h != beginfrom)
+            {
+                used.Add(previousnode[h]);
+                j = previousnode[h];
+                h = j;
+            }
+
+            for (int i = 0; i < used.Count - 1; i++)
+            {
+                if (medges.Exists(element => element.from.Equals(used[i].id)) && medges.Exists(element => element.to.Equals(used[i + 1].id)))
+                {
+                    toadd = medges.Find(element => element.from.Equals(used[i].id) && element.to.Equals(used[i + 1].id));
+                    mp.Add(toadd);
+                }
+                else if (medges.Exists(element => element.to.Equals(used[i].id)) && medges.Exists(element => element.from.Equals(used[i + 1].id)))
+                {
+                    toadd = medges.Find(element => element.to.Equals(used[i].id) && element.from.Equals(used[i + 1].id));
+                    mp.Add(toadd);
                 }
             }
 
-            return totalcosts[endto];
+            return mp;
         }
 
-        public void drawedges(ref List<Node> mnodes, ref List<Edge> medges)
-        {
+         public void drawedges(ref List<Node> mnodes, ref List<Edge> medges, string nazwa)
+         {
 
-            Bitmap myBitmap = new Bitmap(1200, 1200);
-            Graphics g = Graphics.FromImage(myBitmap);
-            Pen pen = new Pen(Brushes.AliceBlue, 2);
-            Pen pen2 = new Pen(Brushes.DeepSkyBlue, 20);
-            Pen pen3 = new Pen(Brushes.Red, 2);
-            for (int i = 0; i < mnodes.Count(); i++)
-            {
-                g.DrawEllipse(pen2, (mnodes[i].x) * 10, (mnodes[i].y) * 10, 20, 20);
-                g.DrawEllipse(pen3, (mnodes[i].x) * 10 - 10, (mnodes[i].y) * 10 - 10, 40, 40);
-            }
+             Bitmap myBitmap = new Bitmap(1200, 1200);
+             Graphics g = Graphics.FromImage(myBitmap);
+             Pen pen = new Pen(Brushes.AliceBlue, 2);
+             Pen pen2 = new Pen(Brushes.Green, 20);
+             Pen pen3 = new Pen(Brushes.Olive, 2);
+             Pen pen4 = new Pen(Brushes.Red, 2);
+             for (int i = 0; i < mnodes.Count(); i++)
+             {
+                 g.DrawEllipse(pen2, (mnodes[i].x) * 10, (mnodes[i].y) * 10, 20, 20);
+                 g.DrawEllipse(pen3, (mnodes[i].x) * 10 - 10, (mnodes[i].y) * 10 - 10, 40, 40);
+             }
             for (int i = 0; i < medges.Count(); i++)
             {
-                g.DrawLine(pen, (mnodes[medges[i].from - 1].x) * 10 + 10, (mnodes[medges[i].from - 1].y) * 10 + 10, (mnodes[medges[i].to - 1].x) * 10 + 10, (mnodes[medges[i].to - 1].y) * 10 + 10);
+                if (nazwa == "graf")
+                {
+                    g.DrawLine(pen, (mnodes[medges[i].from - 1].x) * 10 + 10, (mnodes[medges[i].from - 1].y) * 10 + 10, (mnodes[medges[i].to - 1].x) * 10 + 10, (mnodes[medges[i].to - 1].y) * 10 + 10);
+                }
+                else
+                {
+                    g.DrawLine(pen4, (mnodes[medges[i].from - 1].x) * 10 + 10, (mnodes[medges[i].from - 1].y) * 10 + 10, (mnodes[medges[i].to - 1].x) * 10 + 10, (mnodes[medges[i].to - 1].y) * 10 + 10);
+                }
             }
-            myBitmap.Save(@"D:\graf.bmp");
-        }
-           
-    }
+             myBitmap.Save(@"D:\"+ nazwa +".bmp");
+         }
+         
+     } 
 
-    class Program
-    {
-        static void Main(string[] args)
+        class Program
         {
-           List<Node> nodes = new List<Node>();
-           List<Edge> edges = new List<Edge>();
-           List<Edge> mintree = new List<Edge>();
-           Network network = new Network(nodes, edges);
-           int number_of_nodes = 0;
-           int number_of_edges = 0;
-           int shortestpath;
-
-           network.readfile(ref nodes, ref edges, ref number_of_nodes, ref number_of_edges);
-           network.calculateweight(ref nodes, ref edges, ref number_of_nodes, ref number_of_edges);
-           network.drawedges(ref nodes, ref edges);
-
-            foreach (Edge edge in edges)
+            static void Main(string[] args)
             {
-                int i = edges.IndexOf(edge);
-                Console.WriteLine(edges[i].id + " " + edges[i].from + " " + edges[i].to + " " + edges[i].weight);
-            }
-
-            mintree = network.prim(ref nodes, ref edges, ref number_of_edges);
-            Console.WriteLine("mst:");
-            foreach (Edge edge in mintree)
-            {
-                int i = mintree.IndexOf(edge);
-              
-                Console.WriteLine(mintree[i].id + " " + mintree[i].from + " " + mintree[i].to + " " + mintree[i].weight);
+                List<Node> nodes = new List<Node>();
+                List<Edge> edges = new List<Edge>();
+                List<Edge> mintree = new List<Edge>();
+                List<Edge> shortestpath = new List<Edge>();
+                Network network = new Network(nodes, edges);
+                int number_of_nodes = 0;
+                int number_of_edges = 0;
                 
+
+                network.readfile(ref nodes, ref edges, ref number_of_nodes, ref number_of_edges);
+                network.calculateweight(ref nodes, ref edges, ref number_of_nodes, ref number_of_edges);
+                network.drawedges(ref nodes, ref edges, "graf");
+
+                foreach (Edge edge in edges)
+                {
+                    int i = edges.IndexOf(edge);
+                    Console.WriteLine(edges[i].id + " " + edges[i].from + " " + edges[i].to + " " + edges[i].weight);
+                }
+
+                mintree = network.prim(ref nodes, ref edges, ref number_of_edges);
+                Network tree = new Network(nodes, mintree);
+                tree.drawedges(ref nodes, ref mintree, "mst");
+
+                Console.WriteLine("mst:");
+                foreach (Edge edge in mintree)
+                {
+                    int i = mintree.IndexOf(edge);
+
+                    Console.WriteLine(mintree[i].id + " " + mintree[i].from + " " + mintree[i].to + " " + mintree[i].weight);
+
+                }
+                shortestpath = network.dijkstra(ref nodes, ref edges, 2, 3);
+                Network path = new Network(nodes, shortestpath);
+                path.drawedges(ref nodes, ref shortestpath, "dijkstra");
+
+                Console.ReadKey();
+
             }
-            shortestpath = network.dijkstra(ref nodes, ref edges, 2, 3);
-            Console.WriteLine("shortestpath:" + shortestpath);
-
-            Console.ReadKey();
-
         }
-    }
-    
+
+
     
 }

@@ -228,6 +228,17 @@ namespace Lab1
                 {
                     if (!visited.Contains(neighbours[i])) //ale tylko jesli juz ich nie badalismy wczesniej
                     {
+                        if(priorityq.Contains(neighbours[i])) //jeśli sąsiada nie ma na prority queue
+                            {
+                                //zaktualizowanie tabelki nową wartością jeśli jest mniejsza
+                                //zaktualizowanie poprzednika w wyżej wymienionym przypadku
+                            }
+                        else
+                            {
+                                priorityq.Enqueue(neighbours[i]); //dodanie sąsiada do priority queue
+                                //totalcosts.Add(neighbours[i].id,)
+                                //previousnode.Add(neighbours[i].id,)
+                            }
                         //int newweight = totalcosts.
 
                     }

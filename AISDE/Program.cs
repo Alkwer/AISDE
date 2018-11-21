@@ -273,18 +273,27 @@ namespace Lab1
                 h = j;
             }
 
+            for (int i = 0; i < used.Count; i++)
+            {
+                Console.Write("id" + used[i].id);
+            }
+
             for (int i = 0; i < used.Count - 1; i++)
             {
-                if (medges.Exists(element => element.from.Equals(used[i].id)) && medges.Exists(element => element.to.Equals(used[i + 1].id)))
+                if (medges.Exists(element => element.from.Equals(used[i].id) && element.to.Equals(used[i + 1].id)))
                 {
                     toadd = medges.Find(element => element.from.Equals(used[i].id) && element.to.Equals(used[i + 1].id));
                     mp.Add(toadd);
                 }
-                else if (medges.Exists(element => element.to.Equals(used[i].id)) && medges.Exists(element => element.from.Equals(used[i + 1].id)))
+                else if (medges.Exists(element => element.to.Equals(used[i].id) && element.from.Equals(used[i + 1].id)))
                 {
                     toadd = medges.Find(element => element.to.Equals(used[i].id) && element.from.Equals(used[i + 1].id));
                     mp.Add(toadd);
                 }
+            }
+            for(int i=0; i<mp.Count; i++)
+            {
+                Console.Write("id" + mp[i].id);
             }
 
             return mp;
@@ -295,7 +304,7 @@ namespace Lab1
 
              Bitmap myBitmap = new Bitmap(1200, 1200);
              Graphics g = Graphics.FromImage(myBitmap);
-             Pen pen = new Pen(Brushes.AliceBlue, 2);
+             Pen pen = new Pen(Brushes.Blue, 2);
              Pen pen2 = new Pen(Brushes.Green, 20);
              Pen pen3 = new Pen(Brushes.Olive, 2);
              Pen pen4 = new Pen(Brushes.Red, 2);
@@ -306,7 +315,7 @@ namespace Lab1
              }
             for (int i = 0; i < medges.Count(); i++)
             {
-                if (nazwa == "graf")
+               if (nazwa == "graf")
                 {
                     g.DrawLine(pen, (mnodes[medges[i].from - 1].x) * 10 + 10, (mnodes[medges[i].from - 1].y) * 10 + 10, (mnodes[medges[i].to - 1].x) * 10 + 10, (mnodes[medges[i].to - 1].y) * 10 + 10);
                 }
@@ -355,7 +364,7 @@ namespace Lab1
                     Console.WriteLine(mintree[i].id + " " + mintree[i].from + " " + mintree[i].to + " " + mintree[i].weight);
 
                 }
-                shortestpath = network.dijkstra(ref nodes, ref edges, 2, 3);
+                shortestpath = network.dijkstra(ref nodes, ref edges, 1, 10);
                 Network path = new Network(nodes, shortestpath);
                 path.drawedges(ref nodes, ref shortestpath, "dijkstra");
 

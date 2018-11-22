@@ -277,7 +277,7 @@ namespace Lab1
             {
                 Console.Write("id" + used[i].id);
             }
-
+            Console.Write("    ");
             for (int i = 0; i < used.Count - 1; i++)
             {
                 if (medges.Exists(element => element.from.Equals(used[i].id) && element.to.Equals(used[i + 1].id)))
@@ -305,13 +305,17 @@ namespace Lab1
              Bitmap myBitmap = new Bitmap(1200, 1200);
              Graphics g = Graphics.FromImage(myBitmap);
              Pen pen = new Pen(Brushes.Blue, 2);
-             Pen pen2 = new Pen(Brushes.Green, 20);
-             Pen pen3 = new Pen(Brushes.Olive, 2);
+             Pen pen2 = new Pen(Brushes.YellowGreen, 20);
+             Pen pen3 = new Pen(Brushes.ForestGreen, 2);
              Pen pen4 = new Pen(Brushes.Red, 2);
-             for (int i = 0; i < mnodes.Count(); i++)
+             Font drawFont = new Font("Arial", 20);
+             SolidBrush drawBrush = new SolidBrush(Color.Black);
+
+            for (int i = 0; i < mnodes.Count(); i++)
              {
                  g.DrawEllipse(pen2, (mnodes[i].x) * 10, (mnodes[i].y) * 10, 20, 20);
                  g.DrawEllipse(pen3, (mnodes[i].x) * 10 - 10, (mnodes[i].y) * 10 - 10, 40, 40);
+                 g.DrawString(Convert.ToString(mnodes[i].id), drawFont, drawBrush, (mnodes[i].x) * 10, (mnodes[i].y) * 10);
              }
             for (int i = 0; i < medges.Count(); i++)
             {
@@ -323,6 +327,8 @@ namespace Lab1
                 {
                     g.DrawLine(pen4, (mnodes[medges[i].from - 1].x) * 10 + 10, (mnodes[medges[i].from - 1].y) * 10 + 10, (mnodes[medges[i].to - 1].x) * 10 + 10, (mnodes[medges[i].to - 1].y) * 10 + 10);
                 }
+
+                g.DrawString(Convert.ToString(medges[i].weight), drawFont, drawBrush, ((mnodes[medges[i].from-1].x + mnodes[medges[i].to-1].x)/2) * 10, (mnodes[medges[i].from - 1].y + mnodes[medges[i].to - 1].y) / 2 * 10);
             }
              myBitmap.Save(@"D:\"+ nazwa +".bmp");
          }
@@ -364,7 +370,7 @@ namespace Lab1
                     Console.WriteLine(mintree[i].id + " " + mintree[i].from + " " + mintree[i].to + " " + mintree[i].weight);
 
                 }
-                shortestpath = network.dijkstra(ref nodes, ref edges, 1, 10);
+                shortestpath = network.dijkstra(ref nodes, ref edges, 1, 5);
                 Network path = new Network(nodes, shortestpath);
                 path.drawedges(ref nodes, ref shortestpath, "dijkstra");
 
